@@ -1,0 +1,22 @@
+{
+  "name": "afternoon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",  
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.12",
+    "typescript": "^5.5.4"
+  }
+}
