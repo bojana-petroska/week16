@@ -8,7 +8,7 @@ const EVENTS = {
 function socketServerHandler({ socketServer }: { socketServer: Server }) {
   logger.info('socket is enabled');
   socketServer.on(EVENTS.connection, (socket: Socket) => {
-    logger.info(`new client connected with an id of: ${socket}`);
+    logger.info(`new client connected with an id of: ${socket.id}`);
   });
 }
 
