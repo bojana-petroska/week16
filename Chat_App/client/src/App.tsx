@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Messages, Rooms } from './containers';
 
 function App() {
-  const { socket } = useSocket();
+  const { socket, userName, setUserName } = useSocket();
   const [socketId, setSocketId] = useState<string | undefined>();
   const [userNameInput, setUserNameInput] = useState<string | undefined>('');
 
@@ -13,30 +13,38 @@ function App() {
     if (!userNameInput) {
       return;
     }
-    localStorage.setItem('userName', userNameInput)
-  }
+    setUserName(userNameInput);
+    localStorage.setItem('userName', userNameInput);
+  };
 
   useEffect(() => {
     socket.on('connect', () => {
-      console.log(socket);
-      setSocketId(socket.id)
-    })
+      setSocketId(socket.id);
+    });
     return () => {
       socket.off('connect');
     };
-  }, [socket])
+  }, [socket]);
 
-  return (
-    <div>
+  if (!userName) {
+    return (
       <div>
-        <input type="text" placeholder="username" value={userNameInput} onChange={(e) => setUserNameInput(e.target.value)}/>
+        <input
+          type="text"
+          placeholder="username"
+          value={userNameInput}
+          onChange={(e) => setUserNameInput(e.target.value)}
+        />
         <button onClick={handleUserName}>login</button>
       </div>
+    );
+  }
+
+  return (
     <div className="App">
       {socketId}
       <Messages />
       <Rooms />
-    </div>
     </div>
   );
 }
