@@ -14,6 +14,12 @@ interface Message {
   time: string;
 }
 
+interface UserProfile {
+  displayName: string,
+  avatar: string,
+  themeColor: string,
+}
+
 interface IContext {
   socket: Socket;
   userName?: string;
@@ -22,6 +28,7 @@ interface IContext {
   rooms: Room[];
   messages?: Message[];
   setMessages: (value?: Message[]) => void;
+  setUserProfile?: (value?: UserProfile) => void;
 }
 
 export const socket = socketID(SOCKET_URL, { transports: ['websocket'] });
@@ -30,13 +37,15 @@ export const SocketContext = createContext<IContext>({
   setUserName: () => {},
   rooms: [{ id: '', name: '' }],
   setMessages: () => [],
+  setUserProfile: () => {},
 });
 
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [userName, setUserName] = useState<string | undefined>('');
   const [roomId, setRoomId] = useState<string | undefined>('');
-  const [rooms, setRooms] = useState<Room[]>([{ id: '', name: '' }]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [messages, setMessages] = useState<Message[] | undefined>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | undefined>();
 
   const userNameFromLocalStorage = localStorage.getItem('userName');
 
@@ -52,26 +61,31 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   socket.on(EVENTS.SERVER.JOINED_ROOM, (value) => {
-    setRoomId(value);
+    setRoomId(value.roomId);
+    setMessages(value.messages);
   });
 
   socket.on(EVENTS.SERVER.ROOM_MESSAGE, (value: Message) => {
-    console.log('Received message:', value);
-    setMessages((prevMessages) => {
-      if (prevMessages) {
-        console.log('Updating messages state:', [...prevMessages, value]);
-        return [...prevMessages, value];
-      } else {
-        console.log('Initializing messages state with:', [value]);
-        return [value];
-      }
-    });
+    if (messages) {
+      setMessages([...messages, value]);
+    } else {
+      console.log(value);
+      setMessages([value]);
+    }
   });
-  
 
   return (
     <SocketContext.Provider
-      value={{ socket, userName, setUserName, roomId, rooms, messages, setMessages }}>
+      value={{
+        socket,
+        userName,
+        setUserName,
+        roomId,
+        rooms,
+        messages,
+        setMessages,
+        setUserProfile,
+      }}>
       {children}
     </SocketContext.Provider>
   );

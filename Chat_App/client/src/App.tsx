@@ -3,6 +3,8 @@ import './App.css';
 import { useSocket } from './context/socket_context';
 import { useState, useEffect } from 'react';
 import { Messages, Rooms } from './containers';
+import styles from './styles/App.module.css';
+import { UserProfile } from './containers/UserProfile';
 
 function App() {
   const { socket, userName, setUserName } = useSocket();
@@ -28,23 +30,26 @@ function App() {
 
   if (!userName) {
     return (
-      <div>
-        <input
-          type="text"
-          placeholder="username"
-          value={userNameInput}
-          onChange={(e) => setUserNameInput(e.target.value)}
-        />
-        <button onClick={handleUserName}>login</button>
+      <div className={styles.userNameWrapper}>
+        {/* <UserProfile /> */}
+        <div className={styles.userNameInner}>
+          <input
+            type="text"
+            placeholder="username"
+            value={userNameInput}
+            onChange={(e) => setUserNameInput(e.target.value)}
+          />
+          <button onClick={handleUserName}>login</button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="App">
+    <div className={styles.container}>
       {socketId}
-      <Messages />
       <Rooms />
+      <Messages />
     </div>
   );
 }

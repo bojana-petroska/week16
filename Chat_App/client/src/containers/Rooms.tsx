@@ -4,7 +4,7 @@ import { EVENTS } from '../config/event';
 
 export const Rooms = () => {
   const newRoomRef = useRef<HTMLInputElement>(null);
-  const { socket, rooms } = useSocket();
+  const { socket, rooms, roomId } = useSocket();
 
   const handleCreateRoom = () => {
     const roomName = newRoomRef.current?.value || '';
@@ -17,13 +17,29 @@ export const Rooms = () => {
     }
   };
 
+  const handleJoinRoom = (id: string) => {
+    if (roomId === id) return; // the user is already in this room
+    // const room = rooms.find((room) => room.id === id);
+    // if (!room) return;
+    // const { name } = room;
+
+    socket.emit(EVENTS.CLIENT.JOIN_ROOM, { roomId: id });
+    console.log(`joined room: ${id}`);
+  };
+
   return (
     <div>
       <input placeholder="room name" ref={newRoomRef} />
-      <button onClick={handleCreateRoom}>create room</button>
+      <button onClick={handleCreateRoom} className="cta">
+        create room
+      </button>
       <div>
         {rooms.map(({ id, name }) => (
-          <div key={id}>{name}</div>
+          <div key={id}>
+            <button disabled={roomId === id} onClick={() => handleJoinRoom(id)}>
+              {name}
+            </button>
+          </div>
         ))}
       </div>
     </div>
